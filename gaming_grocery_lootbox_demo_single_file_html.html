@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gaming Grocery Store — Lootbox Demo</title>
+  <style>
+    :root {
+      --bg: #0f1221;
+      --panel: #171b34;
+      --ink: #ecf1ff;
+      --muted: #9aa4c3;
+      --accent: #7c5cff;
+      --accent-2: #00d3a7;
+      --danger: #ff5277;
+      --gold: #ffd76b;
+      --shadow: rgba(0,0,0,.25);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; color: var(--ink);
+      background: radial-gradient(1200px 800px at 70% -10%, #1f2552 0%, #11142a 60%, #0b0e1b 100%) fixed;
+      overflow-x: hidden;
+    }
+    header {
+      padding: 18px 22px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    }
+    .title { font-size: clamp(20px, 2.4vw, 34px); font-weight: 800; letter-spacing: .4px; display: flex; align-items: center; gap: 10px; }
+    .title .badge { font-size: .6em; padding: 4px 8px; border-radius: 999px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); color: #0b0e1b; font-weight: 700; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 8px 22px 40px; display: grid; grid-template-columns: 380px 1fr; gap: 22px; }
+    .panel { background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.00)); border: 1px solid rgba(255,255,255,.08); border-radius: 18px; box-shadow: 0 20px 40px var(--shadow); }
+    .left { padding: 16px; }
+    .right { padding: 14px; display: grid; grid-template-rows: auto 1fr; gap: 12px; }
+
+    h2 { margin: 6px 6px 12px; font-size: 18px; letter-spacing: .3px; font-weight: 800; color: var(--gold); }
+    label { font-size: 12px; color: var(--muted); }
+    input, select { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,.12); background: #11142a; color: var(--ink); outline: none; }
+    input[type="number"] { appearance: textfield; }
+    button { cursor: pointer; padding: 10px 14px; border-radius: 12px; border: none; font-weight: 800; letter-spacing: .3px; box-shadow: 0 10px 18px var(--shadow); }
+    .btn { background: linear-gradient(90deg, var(--accent), var(--accent-2)); color: #0b0e1b; }
+    .btn-ghost { background: rgba(255,255,255,.06); color: var(--ink); border: 1px solid rgba(255,255,255,.12); }
+    .btn-danger { background: linear-gradient(90deg, var(--danger), #ff9db2); color: #0b0e1b; }
+
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .stack { display: grid; gap: 8px; margin: 8px 0 14px; }
+    .items { max-height: 240px; overflow: auto; border: 1px solid rgba(255,255,255,.08); border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,.06); text-align: left; }
+    th { position: sticky; top: 0; background: #12152c; }
+    tbody tr:hover { background: rgba(255,255,255,.04); }
+    .pill { font-size: 12px; padding: 4px 8px; border-radius: 999px; border: 1px solid rgba(255,255,255,.15); background: rgba(255,255,255,.06); }
+
+    /* Wheel area */
+    .stage { position: relative; display: grid; grid-template-columns: 1fr 320px; gap: 12px; align-items: center; }
+    .wheel-wrap { position: relative; width: min(68vh, 640px); aspect-ratio: 1; margin: 0 auto; }
+    .wheel { width: 100%; height: 100%; border-radius: 50%; border: 10px solid #0b0e1b; background: radial-gradient(circle at 50% 50%, rgba(255,255,255,.08), rgba(255,255,255,.02)); position: relative; box-shadow: inset 0 0 60px rgba(0,0,0,.5), 0 20px 40px var(--shadow); transform: rotate(var(--rot, 0deg)); transition: transform var(--spinDur, 4s) cubic-bezier(.11,.75,.27,1);
+    }
+    .slice { position: absolute; inset: 0; clip-path: polygon(50% 50%, 0 0, 100% 0); transform-origin: 50% 50%; display: grid; place-items: center; }
+    .slice .label { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%) rotate(var(--labelRot,0deg)); text-align: center; font-size: clamp(10px, 1.4vw, 16px); font-weight: 800; color: #0b0e1b; text-shadow: 0 1px 0 rgba(255,255,255,.3); width: 46%; }
+    .hub { position: absolute; width: 28%; aspect-ratio: 1; left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle at 30% 30%, #fff, #c9c9ff); border: 6px solid #0b0e1b; display: grid; place-items: center; font-weight: 900; color: #0b0e1b; }
+    .pointer { position: absolute; left: 50%; top: -8px; transform: translateX(-50%); width: 0; height: 0; border-left: 18px solid transparent; border-right: 18px solid transparent; border-bottom: 26px solid var(--gold); filter: drop-shadow(0 4px 2px rgba(0,0,0,.4)); }
+
+    /* Control box */
+    .controls { background: #12152c; border: 1px solid rgba(255,255,255,.08); border-radius: 16px; padding: 12px; display: grid; gap: 8px; }
+    .stat { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 14px; }
+
+    /* Result modal */
+    .modal { position: fixed; inset: 0; display: none; place-items: center; background: rgba(0,0,0,.5); }
+    .modal.show { display: grid; }
+    .card { width: min(520px, 92vw); background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.12); border-radius: 18px; padding: 16px; text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,.35); }
+    .big { font-size: clamp(20px, 2.4vw, 32px); font-weight: 900; letter-spacing: .5px; }
+    .sub { color: var(--muted); font-size: 14px; }
+
+    /* Confetti */
+    .confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+    .bit { position: absolute; width: 10px; height: 14px; opacity: .9; }
+
+    /* Economy parody */
+    .economy { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .coin { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; background: #1a1e3d; border: 1px solid rgba(255,255,255,.12); }
+    .coin b { color: var(--gold); }
+    .storefront { font-size: 12px; color: var(--muted); }
+
+    @media (max-width: 980px) {
+      .wrap { grid-template-columns: 1fr; }
+      .stage { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title">🛒 Gaming Grocery Store <span class="badge">Lootbox Demo</span></div>
+    <div class="economy" style="margin-left:auto">
+      <div class="coin">Gibits: <b id="gibits">100</b></div>
+      <button class="btn-ghost" id="buyGibits">Buy 100 Gibits ($9.99)</button>
+      <button class="btn-ghost" id="buyGibits">Buy 1000 Gibits ($89.99)</button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <!-- Left: Builder -->
+    <section class="panel left">
+      <h2>Build a Lootbox</h2>
+      <div class="stack">
+        <div class="row">
+          <div>
+            <label>Lootbox name</label>
+            <input id="boxName" placeholder="e.g., Grocery Basics Box" />
+          </div>
+          <div>
+            <label>Cost (gibits)</label>
+            <input id="boxCost" type="number" min="0" value="10" />
+          </div>
+        </div>
+        <div class="row3">
+          <div>
+            <label>Item name</label>
+            <input id="itemName" placeholder="Flour" />
+          </div>
+          <div>
+            <label>Probability (%)</label>
+            <input id="itemProb" type="number" min="0" max="100" step="0.01" placeholder="25" />
+          </div>
+          <div>
+            <label>Color / Rarity</label>
+            <input id="itemColor" type="color" value="#ffd76b" />
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button class="btn" id="addItem">Add Item</button>
+          <button class="btn-ghost" id="addPreset">Load Grocery Preset</button>
+          <span class="pill" id="probSum">Total: 0%</span>
+        </div>
+      </div>
+
+      <div class="items">
+        <table>
+          <thead>
+            <tr><th>Item</th><th>Prob %</th><th>Color</th><th></th></tr>
+          </thead>
+          <tbody id="itemRows"></tbody>
+        </table>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
+        <button class="btn" id="buildWheel">Create / Update Lootbox</button>
+        <button class="btn-ghost" id="exportBox">Export JSON</button>
+        <input type="file" id="importBox" style="display:none" accept="application/json" />
+        <button class="btn-ghost" id="importBtn">Import JSON</button>
+        <button class="btn-danger" id="clearItems">Clear</button>
+      </div>
+      <div class="storefront" style="margin-top:8px;">
+        Analogy: Imagine if a grocery store sold <b>gibits</b> instead of groceries. You must buy gibits, then exchange them for a <i>mystery box</i> that may or may not contain the ingredients you actually need.
+      </div>
+    </section>
+
+    <!-- Right: Spinner -->
+    <section class="panel right">
+      <div class="controls">
+        <div class="stat"><div>Lootbox:</div><div id="activeName" class="pill">(none)</div></div>
+        <div class="stat"><div>Cost per open:</div><div id="activeCost" class="pill">—</div></div>
+        <div class="stat"><div>Expected value (items/open):</div><div id="ev" class="pill">—</div></div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn" id="openBtn">Open (Spend Gibits)</button>
+          <button class="btn-ghost" id="freeOpen">Open (Free Demo)</button>
+          <button class="btn-ghost" id="rerender">Rerender Wheel</button>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="wheel-wrap">
+          <div class="pointer"></div>
+          <div id="wheel" class="wheel" aria-label="loot wheel"></div>
+          <div class="hub">SPIN</div>
+        </div>
+        <div style="padding: 8px 8px 8px 0;">
+          <h2>What you're (maybe) buying</h2>
+          <div id="legend"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal" id="resultModal" role="dialog" aria-modal="true">
+    <div class="card">
+      <div class="big" id="resultTitle">You got: —</div>
+      <div class="sub">Observe how celebration is independent of value — a classic dark pattern.</div>
+      <div style="display:flex; gap:8px; justify-content:center; margin-top:12px;">
+        <button class="btn" id="again">Open Again</button>
+        <button class="btn-ghost" id="closeModal">Close</button>
+      </div>
+    </div>
+  </div>
+  <div class="confetti" id="confetti"></div>
+
+  <script>
+    // --- State ---
+    let items = []; // {name, p (0..1), color}
+    let currentRotation = 0;
+    let boxName = "(none)";
+    let boxCost = 10;
+
+    // DOM refs
+    const rows = document.getElementById('itemRows');
+    const probSum = document.getElementById('probSum');
+    const wheel = document.getElementById('wheel');
+    const legend = document.getElementById('legend');
+    const activeName = document.getElementById('activeName');
+    const activeCost = document.getElementById('activeCost');
+    const evEl = document.getElementById('ev');
+
+    const el = id => document.getElementById(id);
+
+    // --- Helpers ---
+    const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+    function sumProb() { return items.reduce((s,it) => s + it.p, 0); }
+    function refreshProbSum() {
+      const pct = (sumProb()*100).toFixed(2);
+      probSum.textContent = `Total: ${pct}%`;
+      probSum.style.background = (Math.abs(100 - pct) < 0.01) ? 'rgba(0,255,170,.12)' : 'rgba(255,255,255,.06)';
+    }
+    function renderRows() {
+      rows.innerHTML = '';
+      items.forEach((it, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${it.name}</td>
+          <td>${(it.p*100).toFixed(2)}</td>
+          <td><span class="pill" style="background:${it.color}; color:#0b0e1b; border:none;">&nbsp;&nbsp;&nbsp;</span></td>
+          <td style="text-align:right;">
+            <button class="btn-ghost" data-edit="${idx}">Edit</button>
+            <button class="btn-danger" data-del="${idx}">Remove</button>
+          </td>`;
+        rows.appendChild(tr);
+      });
+    }
+
+    function normalizeIfNeeded() {
+      const s = sumProb();
+      if (s === 0) return;
+      items = items.map(it => ({...it, p: it.p / s}));
+      refreshProbSum();
+      renderRows();
+    }
+
+    function shardsFromItems() {
+      const shards = []; // [{name, startDeg, endDeg, color}]
+      let a = 0;
+      items.forEach(it => {
+        const ang = it.p * 360;
+        shards.push({ name: it.name, start: a, end: a + ang, color: it.color });
+        a += ang;
+      });
+      return shards;
+    }
+
+    function renderWheel() {
+      wheel.innerHTML = '';
+      const shards = shardsFromItems();
+      shards.forEach((s, i) => {
+        // Build a slice using linear-gradient wedges & rotation
+        const slice = document.createElement('div');
+        slice.className = 'slice';
+        slice.style.setProperty('--labelRot', `${- (s.start + (s.end - s.start)/2)}deg`);
+        slice.style.transform = `rotate(${s.start}deg)`;
+        // Use a conic-gradient background for the pie, but we need each slice isolated; use a wedge via clip-path and a big gradient band.
+        slice.style.background = s.color;
+
+        const label = document.createElement('div');
+        label.className = 'label';
+        const pct = ((s.end - s.start)/360*100).toFixed(1);
+        label.innerHTML = `<div>${s.name}</div><div style="font-weight:900; font-size:.9em; opacity:.8">${pct}%</div>`;
+        slice.appendChild(label);
+        wheel.appendChild(slice);
+      });
+
+      // Add subtle separators by overlaying a conic gradient mask
+      wheel.style.background = `conic-gradient(${items.map(it => `${shade(it.color, -0.2)} ${angleStop(it.name, 'start')}deg, ${shade(it.color,-0.2)} ${angleStop(it.name,'end')}deg`).join(',')})`;
+    }
+
+    // Utility: get angle for named slice
+    function angleStop(name, which) {
+      const shards = shardsFromItems();
+      const s = shards.find(x => x.name === name);
+      return which === 'start' ? s.start : s.end;
+    }
+
+    function shade(hex, lum) {
+      // simple color shade util
+      hex = String(hex).replace(/[^0-9a-f]/gi, '');
+      if (hex.length < 6) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+      let rgb = '#', c, i;
+      for (i = 0; i < 3; i++) {
+        c = parseInt(hex.substr(i*2,2), 16);
+        c = Math.round(Math.min(Math.max(0, c + (c*lum)), 255)).toString(16);
+        rgb += ('00'+c).substr(c.length);
+      }
+      return rgb;
+    }
+
+    function renderLegend() {
+      legend.innerHTML = '';
+      items.forEach(it => {
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.alignItems = 'center';
+        row.style.gap = '10px';
+        row.style.margin = '6px 0';
+        row.innerHTML = `<span class="pill" style="background:${it.color}; color:#0b0e1b; border:none;">&nbsp;&nbsp;&nbsp;</span> <b>${it.name}</b> <span class="sub">${(it.p*100).toFixed(1)}%</span>`;
+        legend.appendChild(row);
+      });
+    }
+
+    function updateHeader() {
+      activeName.textContent = boxName;
+      activeCost.textContent = `${boxCost} gibits`;
+      evEl.textContent = (items.length ? 1 : 0).toFixed(2);
+    }
+
+    function weightedChoice() {
+      const r = Math.random();
+      let acc = 0;
+      for (const it of items) {
+        acc += it.p;
+        if (r <= acc) return it;
+      }
+      return items[items.length-1];
+    }
+
+    function findSliceAngles(itName) {
+      const shards = shardsFromItems();
+      const s = shards.find(x => x.name === itName);
+      if (!s) return {mid: 0};
+      return { mid: (s.start + s.end)/2, start: s.start, end: s.end };
+    }
+
+    function spinTo(item) {
+      const { mid } = findSliceAngles(item.name);
+      const spins = 5 + Math.floor(Math.random()*3); // 5-7 full spins
+      // We want pointer at 0deg (12 o'clock) to land on mid of chosen slice.
+      // Compute target so that (currentRotation + delta) % 360 = 360 - mid
+      const current = currentRotation % 360;
+      const targetWithin360 = (360 - mid);
+      let delta = targetWithin360 - current + 360*spins;
+      // small jitter so it feels alive
+      delta += (Math.random() - .5) * 4;
+      const dur = 4 + Math.random()*1.2;
+      wheel.style.setProperty('--spinDur', `${dur}s`);
+      currentRotation += delta;
+      wheel.style.setProperty('--rot', `${currentRotation}deg`);
+      return new Promise(res => setTimeout(res, dur*1000 + 50));
+    }
+
+    // Confetti celebration
+    function celebrate(color) {
+      const field = document.getElementById('confetti');
+      field.innerHTML = '';
+      const N = 160;
+      for (let i=0;i<N;i++) {
+        const b = document.createElement('div');
+        b.className = 'bit';
+        b.style.left = Math.random()*100 + 'vw';
+        b.style.top = '-10px';
+        const hue = Math.floor(Math.random()*360);
+        b.style.background = i%3 ? (color||`hsl(${hue} 90% 60%)`) : `hsl(${hue} 90% 70%)`;
+        b.style.transform = `rotate(${Math.random()*360}deg)`;
+        field.appendChild(b);
+        const fall = 1200 + Math.random()*1200;
+        const drift = (Math.random()-.5)*200;
+        b.animate([
+          { transform: `translate(0,0) rotate(0deg)`},
+          { transform: `translate(${drift}px, ${window.innerHeight+100}px) rotate(${720+Math.random()*720}deg)`}
+        ], { duration: fall, easing: 'cubic-bezier(.22,.9,.1,1)', iterations: 1, fill: 'forwards' });
+      }
+      setTimeout(()=>{ field.innerHTML=''; }, 2500);
+    }
+
+    // --- Event wiring ---
+    document.getElementById('addItem').addEventListener('click', ()=>{
+      const name = el('itemName').value.trim();
+      const prob = parseFloat(el('itemProb').value);
+      const color = el('itemColor').value || '#ffd76b';
+      if (!name || !(prob>=0)) { alert('Please enter an item name and a probability.'); return; }
+      items.push({ name, p: clamp(prob/100, 0, 1), color });
+      refreshProbSum();
+      renderRows();
+      el('itemName').value = '';
+      el('itemProb').value = '';
+    });
+
+    rows.addEventListener('click', (e)=>{
+      const t = e.target;
+      if (t.dataset.del) {
+        items.splice(parseInt(t.dataset.del), 1);
+        renderRows(); refreshProbSum();
+      } else if (t.dataset.edit) {
+        const idx = parseInt(t.dataset.edit);
+        const it = items[idx];
+        const name = prompt('Item name', it.name);
+        if (name===null) return;
+        const prob = parseFloat(prompt('Probability (%)', (it.p*100).toFixed(2)));
+        if (!(prob>=0)) return;
+        const color = prompt('Hex color', it.color) || it.color;
+        items[idx] = { name, p: clamp(prob/100,0,1), color };
+        renderRows(); refreshProbSum();
+      }
+    });
+
+    document.getElementById('clearItems').addEventListener('click', ()=>{
+      if (!confirm('Clear all items?')) return;
+      items = []; renderRows(); refreshProbSum();
+    });
+
+    document.getElementById('buildWheel').addEventListener('click', ()=>{
+      if (Math.abs(sumProb() - 1) > 0.0001) {
+        if (!confirm('Probabilities do not sum to 100%. Normalize automatically?')) return;
+        normalizeIfNeeded();
+      }
+      boxName = el('boxName').value.trim() || '(unnamed box)';
+      boxCost = Math.max(0, parseInt(el('boxCost').value || '0'));
+      renderWheel(); renderLegend(); updateHeader();
+    });
+
+    document.getElementById('rerender').addEventListener('click', ()=>{ renderWheel(); });
+
+    document.getElementById('exportBox').addEventListener('click', ()=>{
+      const data = { name: boxName, cost: boxCost, items };
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `${boxName.replace(/\s+/g,'_')||'lootbox'}.json`;
+      a.click(); URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('importBtn').addEventListener('click', ()=> el('importBox').click());
+    document.getElementById('importBox').addEventListener('change', async (ev)=>{
+      const file = ev.target.files[0]; if (!file) return;
+      const text = await file.text();
+      try {
+        const data = JSON.parse(text);
+        boxName = data.name || '(imported box)';
+        boxCost = data.cost ?? 10;
+        items = (data.items||[]).map(x=>({ name:x.name, p:x.p, color:x.color||'#ffd76b' }));
+        renderRows(); refreshProbSum(); renderWheel(); renderLegend(); updateHeader();
+      } catch(e) { alert('Invalid JSON'); }
+    });
+
+    // Spin
+    async function doOpen(spend) {
+      if (!items.length) { alert('Build a lootbox first.'); return; }
+      if (Math.abs(sumProb()-1) > 0.001) { alert('Probabilities must sum to 100% (use Create/Update).'); return; }
+      if (spend) {
+        const have = parseInt(document.getElementById('gibits').textContent);
+        if (have < boxCost) { alert('Not enough gibits. Consider… buying more?'); return; }
+        document.getElementById('gibits').textContent = have - boxCost;
+      }
+      const chosen = weightedChoice();
+      await spinTo(chosen);
+      // Win modal + confetti
+      celebrate(chosen.color);
+      el('resultTitle').innerHTML = `You got: <span style="color:${chosen.color}">${chosen.name}</span>`;
+      el('resultModal').classList.add('show');
+    }
+
+    document.getElementById('openBtn').addEventListener('click', ()=> doOpen(true));
+    document.getElementById('freeOpen').addEventListener('click', ()=> doOpen(false));
+    document.getElementById('again').addEventListener('click', ()=> { el('resultModal').classList.remove('show'); doOpen(true); });
+    document.getElementById('closeModal').addEventListener('click', ()=> el('resultModal').classList.remove('show'));
+
+    document.getElementById('buyGibits').addEventListener('click', ()=>{
+      const b = document.getElementById('gibits');
+      b.textContent = parseInt(b.textContent) + 100;
+      alert('Purchase complete! (Demo)');
+    });
+
+    document.querySelector('.hub').addEventListener('click', ()=> doOpen(false));
+
+    // Preset with intentionally skewed odds
+    document.getElementById('addPreset').addEventListener('click', ()=>{
+      items = [
+        { name:'🍞 Bread', p: .35, color:'#ffd76b' },
+        { name:'🥚 Eggs (1pc)', p: .28, color:'#b5e3ff' },
+        { name:'🥛 Milk (half carton)', p: .2, color:'#c3ffe2' },
+        { name:'🧈 Butter (pat)', p: .1, color:'#ffe4b5' },
+        { name:'🥩 Steak (rare drop)', p: .04, color:'#ff8b8b' },
+        { name:'🛍️ Coupon (worthless)', p: .03, color:'#e0d0ff' } 
+      ];
+      boxName = 'Grocery Basics Box';
+      boxCost = 10;
+      el('boxName').value = boxName; el('boxCost').value = boxCost;
+      renderRows(); refreshProbSum();
+    });
+
+    // Initialize
+    renderRows(); refreshProbSum(); updateHeader();
+  </script>
+</body>
+</html>

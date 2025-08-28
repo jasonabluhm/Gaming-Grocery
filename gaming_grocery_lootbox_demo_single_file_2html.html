@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gaming Grocery Store — Lootbox Demo</title>
+  <style>
+    :root {
+      --bg: #0f1221;
+      --panel: #171b34;
+      --ink: #ecf1ff;
+      --muted: #9aa4c3;
+      --accent: #7c5cff;
+      --accent-2: #00d3a7;
+      --danger: #ff5277;
+      --gold: #ffd76b;
+      --shadow: rgba(0,0,0,.25);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; color: var(--ink);
+      background: radial-gradient(1200px 800px at 70% -10%, #1f2552 0%, #11142a 60%, #0b0e1b 100%) fixed;
+      overflow-x: hidden;
+    }
+    header { padding: 18px 22px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .title { font-size: clamp(20px, 2.4vw, 34px); font-weight: 800; letter-spacing: .4px; display: flex; align-items: center; gap: 10px; }
+    .title .badge { font-size: .6em; padding: 4px 8px; border-radius: 999px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); color: #0b0e1b; font-weight: 700; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 8px 22px 40px; display: grid; grid-template-columns: 380px 1fr; gap: 22px; }
+    .panel { background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.00)); border: 1px solid rgba(255,255,255,.08); border-radius: 18px; box-shadow: 0 20px 40px var(--shadow); }
+    .left { padding: 16px; }
+    .right { padding: 14px; display: grid; grid-template-rows: auto 1fr; gap: 12px; }
+    h2 { margin: 6px 6px 12px; font-size: 18px; letter-spacing: .3px; font-weight: 800; color: var(--gold); }
+    label { font-size: 12px; color: var(--muted); }
+    input, select { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,.12); background: #11142a; color: var(--ink); outline: none; }
+    input[type="number"] { appearance: textfield; }
+    button { cursor: pointer; padding: 10px 14px; border-radius: 12px; border: none; font-weight: 800; letter-spacing: .3px; box-shadow: 0 10px 18px var(--shadow); }
+    .btn { background: linear-gradient(90deg, var(--accent), var(--accent-2)); color: #0b0e1b; }
+    .btn-ghost { background: rgba(255,255,255,.06); color: var(--ink); border: 1px solid rgba(255,255,255,.12); }
+    .btn-danger { background: linear-gradient(90deg, var(--danger), #ff9db2); color: #0b0e1b; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .stack { display: grid; gap: 8px; margin: 8px 0 14px; }
+    .items { max-height: 240px; overflow: auto; border: 1px solid rgba(255,255,255,.08); border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,.06); text-align: left; }
+    th { position: sticky; top: 0; background: #12152c; }
+    tbody tr:hover { background: rgba(255,255,255,.04); }
+    .pill { font-size: 12px; padding: 4px 8px; border-radius: 999px; border: 1px solid rgba(255,255,255,.15); background: rgba(255,255,255,.06); }
+
+    /* Wheel area */
+    .stage { position: relative; display: grid; grid-template-columns: 1fr 320px; gap: 12px; align-items: center; }
+    .wheel-wrap { position: relative; width: min(68vh, 640px); aspect-ratio: 1; margin: 0 auto; }
+    .wheel { width: 100%; height: 100%; border-radius: 50%; border: 10px solid #0b0e1b; background: radial-gradient(circle at 50% 50%, rgba(255,255,255,.08), rgba(255,255,255,.02)); position: relative; box-shadow: inset 0 0 60px rgba(0,0,0,.5), 0 20px 40px var(--shadow); transform: rotate(var(--rot, 0deg)); transition: transform var(--spinDur, 4s) cubic-bezier(.11,.75,.27,1); overflow: hidden; }
+    .slice { display: none; } /* old triangle slices removed */
+    .slice .label { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%) rotate(var(--labelRot,0deg)); text-align: center; font-size: clamp(10px, 1.4vw, 16px); font-weight: 800; color: #0b0e1b; text-shadow: 0 1px 0 rgba(255,255,255,.3); width: 46%; }
+    .hub { position: absolute; width: 28%; aspect-ratio: 1; left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle at 30% 30%, #fff, #c9c9ff); border: 6px solid #0b0e1b; display: grid; place-items: center; font-weight: 900; color: #0b0e1b; }
+    .pointer { position: absolute; left: 50%; top: -8px; transform: translateX(-50%); width: 0; height: 0; border-left: 18px solid transparent; border-right: 18px solid transparent; border-bottom: 26px solid var(--gold); filter: drop-shadow(0 4px 2px rgba(0,0,0,.4)); }
+
+    /* Control box */
+    .controls { background: #12152c; border: 1px solid rgba(255,255,255,.08); border-radius: 16px; padding: 12px; display: grid; gap: 8px; }
+    .stat { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 14px; }
+
+    /* Result modal */
+    .modal { position: fixed; inset: 0; display: none; place-items: center; background: rgba(0,0,0,.5); }
+    .modal.show { display: grid; }
+    .card { width: min(520px, 92vw); background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.12); border-radius: 18px; padding: 16px; text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,.35); }
+    .big { font-size: clamp(20px, 2.4vw, 32px); font-weight: 900; letter-spacing: .5px; }
+    .sub { color: var(--muted); font-size: 14px; }
+
+    /* Confetti */
+    .confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+    .bit { position: absolute; width: 10px; height: 14px; opacity: .9; }
+
+    /* Economy parody */
+    .economy { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .coin { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.04); font-weight: 700; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 class="title">Lootbox Demo <span class="badge">v2</span></h1>
+  </header>
+
+  <div class="wrap">
+    <div class="left">
+      <h2>Settings</h2>
+      <div class="controls">
+        <label>Items (comma separated)</label>
+        <input id="itemInput" value="Gold, Silver, Bronze, Diamond" />
+        <label>Spin Duration (s)</label>
+        <input id="spinDuration" type="number" value="4" />
+        <button class="btn" onclick="spinRandom()">Spin!</button>
+      </div>
+    </div>
+    <div class="right">
+      <div class="stage">
+        <div class="wheel-wrap">
+          <div class="wheel" id="wheel">
+            <div class="hub">🎁</div>
+            <div class="pointer"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const wheel = document.getElementById("wheel");
+    const itemInput = document.getElementById("itemInput");
+    const spinDurationInput = document.getElementById("spinDuration");
+
+    let items = itemInput.value.split(",").map(i => i.trim());
+    let rot = 0;
+
+    function renderWheel() {
+      items = itemInput.value.split(",").map(i => i.trim());
+      const colors = ["#f7c59f","#ffb3b3","#a3e1ff","#d6a3ff","#ffd76b","#7c5cff"];
+      const sliceAngle = 360 / items.length;
+
+      // Build conic-gradient
+      let gradient = items.map((_, i) => `${colors[i % colors.length]} ${i*sliceAngle}deg ${ (i+1)*sliceAngle }deg`).join(", ");
+      wheel.style.background = `conic-gradient(${gradient})`;
+
+      // Remove old labels
+      document.querySelectorAll(".slice-label").forEach(e => e.remove());
+
+      // Add labels
+      items.forEach((item, i) => {
+        const label = document.createElement("div");
+        label.className = "slice-label";
+        const angle = (i + 0.5) * sliceAngle;
+        const rad = angle * Math.PI / 180;
+        const r = wheel.clientWidth/2 * 0.7;
+        label.style.position = "absolute";
+        label.style.left = `${50 + r * Math.cos(rad)/wheel.clientWidth*100}%`;
+        label.style.top = `${50 + r * Math.sin(rad)/wheel.clientHeight*100}%`;
+        label.style.transform = `translate(-50%,-50%) rotate(${angle}deg)`;
+        label.style.color = "#0b0e1b";
+        label.style.fontWeight = "800";
+        label.innerText = item;
+        label.style.pointerEvents = "none";
+        label.style.fontSize = "clamp(10px,1.4vw,16px)";
+        label.style.textAlign = "center";
+        wheel.appendChild(label);
+      });
+    }
+
+    function spinTo(item) {
+      const index = items.indexOf(item);
+      const sliceAngle = 360 / items.length;
+      const randOffset = Math.random() * sliceAngle;
+      const targetRot = 360*5 - (index*sliceAngle + sliceAngle/2) + randOffset; // multiple spins
+      rot += targetRot;
+      wheel.style.setProperty("--spinDur", `${spinDurationInput.value}s`);
+      wheel.style.transform = `rotate(${rot}deg)`;
+    }
+
+    function spinRandom() {
+      const choice = items[Math.floor(Math.random()*items.length)];
+      spinTo(choice);
+      setTimeout(() => alert(`You won: ${choice}`), spinDurationInput.value*1000 + 200);
+    }
+
+    itemInput.addEventListener("change", renderWheel);
+    renderWheel();
+  </script>
+</body>
+</html>

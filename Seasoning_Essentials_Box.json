@@ -1,0 +1,36 @@
+{
+  "name": "Seasoning Essentials Box",
+  "cost": 375,
+  "items": [
+    {
+      "name": "\ud83e\uddc2 Salt",
+      "p": 0.3,
+      "color": "#ffffff"
+    },
+    {
+      "name": "\ud83c\udf36\ufe0f Chili Powder",
+      "p": 0.25,
+      "color": "#ff4500"
+    },
+    {
+      "name": "\ud83e\uddc4 Garlic Powder",
+      "p": 0.2,
+      "color": "#f5f5dc"
+    },
+    {
+      "name": "\ud83c\udf3f Basil",
+      "p": 0.15,
+      "color": "#7cfc00"
+    },
+    {
+      "name": "\ud83e\udd44 Cinnamon (Rare)",
+      "p": 0.07,
+      "color": "#d2691e"
+    },
+    {
+      "name": "\ud83c\udf4b Lemon Zest (Ultra Rare)",
+      "p": 0.03,
+      "color": "#fff44f"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "name": "German Box",
+  "items": [
+    {
+      "name": "\ud83e\udd68 Pretzel",
+      "p": 0.25,
+      "color": "#d2b48c"
+    },
+    {
+      "name": "\ud83e\udd69 Bratwurst",
+      "p": 0.2,
+      "color": "#ff6347"
+    },
+    {
+      "name": "\ud83e\udd56 Rye Bread",
+      "p": 0.2,
+      "color": "#f4d183"
+    },
+    {
+      "name": "\ud83e\uddc0 Cheese",
+      "p": 0.15,
+      "color": "#ffd700"
+    },
+    {
+      "name": "\ud83c\udf7a Beer (Rare)",
+      "p": 0.1,
+      "color": "#f0e68c"
+    },
+    {
+      "name": "\ud83c\udf6b Chocolate (Ultra Rare)",
+      "p": 0.1,
+      "color": "#8b4513"
+    }
+  ],
+  "cost": 562
+}

@@ -1,0 +1,38 @@
+{
+  "name": "Drinks & Beverages Box",
+  "cost": 438,
+  "items": [
+    {
+      "name": "🥤 Soda",
+      "p": 0.25,
+      "color": "#ff6347"
+    },
+    {
+      "name": "🧃 Juice",
+      "p": 0.2,
+      "color": "#ffdd57"
+    },
+    {
+      "name": "☕ Coffee",
+      "p": 0.2,
+      "color": "#6f4e37"
+    },
+    {
+      "name": "🍵 Tea",
+      "p": 0.15,
+      "color": "#d0f0c0"
+    },
+    {
+      "name": "🥛 Milk",
+      "p": 0.12,
+      "color": "#fff8dc"
+    },
+    {
+      "name": "🍾 Sparkling Water (rare)",
+      "p": 0.08,
+      "color": "#b3e5fc"
+    }
+  ]
+}
+
+

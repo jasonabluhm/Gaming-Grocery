@@ -1,0 +1,36 @@
+{
+  "name": "Indian Box",
+  "items": [
+    {
+      "name": "\ud83c\udf3e Basmati Rice",
+      "p": 0.25,
+      "color": "#fffacd"
+    },
+    {
+      "name": "\ud83c\udf36\ufe0f Red Chili Powder",
+      "p": 0.2,
+      "color": "#ff4500"
+    },
+    {
+      "name": "\ud83e\udd6c Spinach",
+      "p": 0.2,
+      "color": "#7cfc00"
+    },
+    {
+      "name": "\ud83e\uded8 Lentils",
+      "p": 0.15,
+      "color": "#f4a460"
+    },
+    {
+      "name": "\ud83e\uddc4 Garlic",
+      "p": 0.1,
+      "color": "#f5f5dc"
+    },
+    {
+      "name": "\ud83e\udd5b Ghee (Rare)",
+      "p": 0.1,
+      "color": "#ffe4b5"
+    }
+  ],
+  "cost": 500
+}

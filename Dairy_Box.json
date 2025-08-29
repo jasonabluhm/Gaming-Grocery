@@ -1,0 +1,39 @@
+{
+  "name": "Dairy Box",
+  "cost": 203,
+  "items": [
+    {
+      "name": "🥛 Milk (Carton)",
+      "p": 0.3,
+      "color": "#fff8dc"
+    },
+    {
+      "name": "🧈 Butter (Stick)",
+      "p": 0.25,
+      "color": "#ffe4b5"
+    },
+    {
+      "name": "🧀 Cheese (Block)",
+      "p": 0.2,
+      "color": "#ffd700"
+    },
+    {
+      "name": "🥚 Eggs (Dozen)",
+      "p": 0.15,
+      "color": "#f5f5dc"
+    },
+    {
+      "name": "🍦 Ice Cream (Rare)",
+      "p": 0.07,
+      "color": "#ffb6c1"
+    },
+    {
+      "name": "🥛 Cream (Ultra Rare)",
+      "p": 0.03,
+      "color": "#f0fff0"
+    }
+  ]
+}
+
+
+

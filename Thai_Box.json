@@ -1,0 +1,36 @@
+{
+  "name": "Thai Box",
+  "items": [
+    {
+      "name": "\ud83e\udd65 Coconut Milk",
+      "p": 0.25,
+      "color": "#fff8dc"
+    },
+    {
+      "name": "\ud83c\udf36\ufe0f Thai Chili",
+      "p": 0.2,
+      "color": "#ff4500"
+    },
+    {
+      "name": "\ud83c\udf5c Rice Noodles",
+      "p": 0.2,
+      "color": "#fffacd"
+    },
+    {
+      "name": "\ud83e\udd6c Bok Choy",
+      "p": 0.15,
+      "color": "#7cfc00"
+    },
+    {
+      "name": "\ud83e\uddc4 Garlic",
+      "p": 0.1,
+      "color": "#f5f5dc"
+    },
+    {
+      "name": "\ud83e\udd90 Shrimp (Rare)",
+      "p": 0.1,
+      "color": "#ffb6c1"
+    }
+  ],
+  "cost": 500
+}

@@ -1,0 +1,39 @@
+{
+  "name": "Meats Box",
+  "cost": 813,
+  "items": [
+    {
+      "name": "🥩 Beef Steak",
+      "p": 0.25,
+      "color": "#ff8b8b"
+    },
+    {
+      "name": "🍗 Chicken Drumstick",
+      "p": 0.25,
+      "color": "#f4a460"
+    },
+    {
+      "name": "🥓 Bacon",
+      "p": 0.2,
+      "color": "#d2691e"
+    },
+    {
+      "name": "🍖 Ribs",
+      "p": 0.15,
+      "color": "#a0522d"
+    },
+    {
+      "name": "🥩 Lamb Chop (rare)",
+      "p": 0.1,
+      "color": "#ff6347"
+    },
+    {
+      "name": "🦪 Exotic Meat (ultra rare)",
+      "p": 0.05,
+      "color": "#c0c0c0"
+    }
+  ]
+}
+
+
+

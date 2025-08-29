@@ -1,0 +1,36 @@
+{
+  "name": "Veggie Essentials Box",
+  "cost": 438,
+  "items": [
+    {
+      "name": "🥕 Carrot",
+      "p": 0.3,
+      "color": "#ffa07a"
+    },
+    {
+      "name": "🥦 Broccoli",
+      "p": 0.25,
+      "color": "#7cfc00"
+    },
+    {
+      "name": "🌽 Corn (ear)",
+      "p": 0.2,
+      "color": "#fff68f"
+    },
+    {
+      "name": "🍅 Tomato",
+      "p": 0.15,
+      "color": "#ff6347"
+    },
+    {
+      "name": "🧄 Garlic",
+      "p": 0.07,
+      "color": "#f5f5dc"
+    },
+    {
+      "name": "🥬 Rare Lettuce",
+      "p": 0.03,
+      "color": "#adff2f"
+    }
+  ]
+}

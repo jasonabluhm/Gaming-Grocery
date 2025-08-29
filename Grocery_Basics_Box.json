@@ -1,0 +1,36 @@
+{
+  "name": "Grocery Basics Box",
+  "cost": 625,
+  "items": [
+    {
+      "name": "🍞 Bread",
+      "p": 0.35,
+      "color": "#ffd76b"
+    },
+    {
+      "name": "🥚 Eggs (dozen)",
+      "p": 0.28,
+      "color": "#b5e3ff"
+    },
+    {
+      "name": "🥛 Milk (half gallon)",
+      "p": 0.2,
+      "color": "#c3ffe2"
+    },
+    {
+      "name": "🧈 Butter",
+      "p": 0.1,
+      "color": "#ffe4b5"
+    },
+    {
+      "name": "🥩 Steak (rare)",
+      "p": 0.04,
+      "color": "#ff8b8b"
+    },
+    {
+      "name": "🛍️ Coupon (worthless)",
+      "p": 0.03,
+      "color": "#e0d0ff"
+    }
+  ]
+}

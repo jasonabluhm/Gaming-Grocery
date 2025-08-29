@@ -1,0 +1,38 @@
+{
+  "name": "Snacks & Candy Box",
+  "cost": 125,
+  "items": [
+    {
+      "name": "🍫 Chocolate Bar",
+      "p": 0.25,
+      "color": "#8b4513"
+    },
+    {
+      "name": "🍬 Hard Candy",
+      "p": 0.2,
+      "color": "#ff69b4"
+    },
+    {
+      "name": "🍪 Cookie",
+      "p": 0.2,
+      "color": "#f5deb3"
+    },
+    {
+      "name": "🍟 Potato Chips",
+      "p": 0.15,
+      "color": "#f4d183"
+    },
+    {
+      "name": "🍿 Popcorn (Rare)",
+      "p": 0.12,
+      "color": "#fffacd"
+    },
+    {
+      "name": "🍭 Lollipop (Ultra Rare)",
+      "p": 0.08,
+      "color": "#ff4500"
+    }
+  ]
+}
+
+

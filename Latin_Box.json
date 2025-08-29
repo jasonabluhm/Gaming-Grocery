@@ -1,0 +1,36 @@
+{
+  "name": "Latin Box",
+  "items": [
+    {
+      "name": "\ud83c\udf3d Corn Tortilla",
+      "p": 0.25,
+      "color": "#fff68f"
+    },
+    {
+      "name": "\ud83e\udd51 Avocado",
+      "p": 0.2,
+      "color": "#7fff00"
+    },
+    {
+      "name": "\ud83c\udf36\ufe0f Chili Pepper",
+      "p": 0.2,
+      "color": "#ff4500"
+    },
+    {
+      "name": "\ud83e\uded8 Black Beans",
+      "p": 0.15,
+      "color": "#3d3d3d"
+    },
+    {
+      "name": "\ud83e\uddc4 Garlic",
+      "p": 0.1,
+      "color": "#f5f5dc"
+    },
+    {
+      "name": "\ud83e\udd69 Chorizo (Rare)",
+      "p": 0.1,
+      "color": "#ff6347"
+    }
+  ],
+  "cost": 438
+}

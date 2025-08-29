@@ -1,0 +1,37 @@
+{
+  "name": "Grain & Pasta Box",
+  "cost": 520,
+  "items": [
+    {
+      "name": "🍝 Spaghetti",
+      "p": 0.25,
+      "color": "#f5deb3"
+    },
+    {
+      "name": "🥖 Baguette",
+      "p": 0.2,
+      "color": "#f4d183"
+    },
+    {
+      "name": "🍚 Rice (1 cup)",
+      "p": 0.2,
+      "color": "#fff8dc"
+    },
+    {
+      "name": "🥯 Bagel",
+      "p": 0.15,
+      "color": "#deb887"
+    },
+    {
+      "name": "🍜 Fusilli",
+      "p": 0.12,
+      "color": "#ffe4b5"
+    },
+    {
+      "name": "🥨 Pretzel (rare)",
+      "p": 0.08,
+      "color": "#d2b48c"
+    }
+  ]
+}
+

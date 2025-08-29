@@ -69,9 +69,27 @@
     /* Result modal */
     .modal { position: fixed; inset: 0; display: none; place-items: center; background: rgba(0,0,0,.5); }
     .modal.show { display: grid; }
-    .card { width: min(520px, 92vw); background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.12); border-radius: 18px; padding: 16px; text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,.35); }
-    .big { font-size: clamp(20px, 2.4vw, 32px); font-weight: 900; letter-spacing: .5px; }
-    .sub { color: var(--muted); font-size: 14px; }
+    .card { 
+  width: min(520px, 92vw); 
+  background: linear-gradient(180deg, rgba(0,0,0,0.85), rgba(0,0,0,0.95)); /* darker background */
+  border: 1px solid rgba(255,255,255,.12); 
+  border-radius: 18px; 
+  padding: 16px; 
+  text-align: center; 
+  box-shadow: 0 30px 60px rgba(0,0,0,.35); 
+}
+
+.big { 
+  font-size: clamp(20px, 2.4vw, 32px); 
+  font-weight: 900; 
+  letter-spacing: .5px; 
+  color: #fff; /* ensures high contrast against darker background */
+}
+
+.sub { 
+  color: #ddd; /* lighter than muted for readability */
+  font-size: 14px; 
+}
 
     /* Confetti */
     .confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
@@ -95,6 +113,7 @@
     <div class="economy" style="margin-left:auto">
       <div class="coin">Gibits: <b id="gibits">100</b></div>
       <button class="btn-ghost" id="buyGibits">Buy 500 Gibits ($7.99)</button>
+      <button class="btn-ghost" id="buyManyGibits">Buy 5000 Gibits ($74.99)</button>
     </div>
   </header>
 
@@ -185,7 +204,7 @@
   <div class="modal" id="resultModal" role="dialog" aria-modal="true">
     <div class="card">
       <div class="big" id="resultTitle">You got: —</div>
-      <div class="sub">Observe how celebration is independent of value — a classic dark pattern.</div>
+      <div class="sub">Observe how celebration happens regardless of outcome, a classic dopamine trigger.</div>
       <div style="display:flex; gap:8px; justify-content:center; margin-top:12px;">
         <button class="btn" id="again">Open Again</button>
         <button class="btn-ghost" id="closeModal">Close</button>
@@ -209,6 +228,31 @@
   const activeName = document.getElementById('activeName');
   const activeCost = document.getElementById('activeCost');
   const evEl = document.getElementById('ev');
+  // --- Sounds ---
+const spinSound = new Audio("spin.mp3");
+spinSound.volume = 0.5;
+const dingSound = new Audio("ding.mp3"); 
+const coinDropSound = new Audio("coin-drop.mp3");   // for $7.99 button
+const chaChingSound = new Audio("cha-ching.mp3");   // for $74.99 button
+// Play looped first-second part
+function startSpinLoop() {
+  spinSound.currentTime = 0;
+  spinSound.play();
+  
+  // Keep looping only first second
+  spinSound.ontimeupdate = () => {
+    if (spinSound.currentTime > 1) {  // loop back before slowdown part
+      spinSound.currentTime = 0;
+    }
+  };
+}
+
+// Transition to slowdown tail
+function playSlowdown() {
+  spinSound.ontimeupdate = null;  // stop forced looping
+  spinSound.currentTime = 1;      // jump to slowdown section
+  spinSound.play();
+}
 
   const el = id => document.getElementById(id);
 
@@ -310,19 +354,45 @@
     return { mid: (s.start + s.end)/2, start: s.start, end: s.end };
   }
 
-  async function spinTo(item) {
-    const { mid } = findSliceAngles(item.name);
-    const spins = 5 + Math.floor(Math.random()*3);
-    const current = currentRotation % 360;
-    const targetWithin360 = (360 - mid);
-    let delta = targetWithin360 - current + 360*spins;
-    delta += (Math.random() - 0.5) * 4;
-    const dur = 4 + Math.random()*1.2;
-    wheel.style.setProperty('--spinDur', `${dur}s`);
-    currentRotation += delta;
-    wheel.style.setProperty('--rot', `${currentRotation}deg`);
-    return new Promise(res => setTimeout(res, dur*1000 + 50));
-  }
+async function spinTo(item) {
+  const { mid } = findSliceAngles(item.name);
+  const spins = 5 + Math.floor(Math.random() * 3);
+  const current = currentRotation % 360;
+  const targetWithin360 = 360 - mid;
+  let delta = targetWithin360 - current + 360 * spins;
+  delta += (Math.random() - 0.5) * 4;
+  const dur = 4 + Math.random() * 1.2;
+
+  // --- Animate the wheel ---
+  wheel.style.setProperty("--spinDur", `${dur}s`);
+  currentRotation += delta;
+  wheel.style.setProperty("--rot", `${currentRotation}deg`);
+
+  // --- Play spin sound with extended fast part ---
+  spinSound.currentTime = 0;
+  spinSound.loop = false;
+  spinSound.play();
+
+  // After first second, restart once from 0, then let it play fully
+  setTimeout(() => {
+    spinSound.currentTime = 0;
+    spinSound.play();
+  }, 1000);
+
+  return new Promise(res => {
+    setTimeout(() => {
+      spinSound.pause();
+      spinSound.currentTime = 0;
+
+      // --- Play ding sound at the end ---
+      dingSound.currentTime = 0;
+      dingSound.play();
+
+      res();
+    }, dur * 1000 + 50);
+  });
+}
+
 
   function celebrate(color) {
     const field = document.getElementById('confetti');
@@ -416,23 +486,38 @@
   document.getElementById('freeOpen').addEventListener('click', ()=>doOpen(false));
   document.getElementById('again').addEventListener('click', ()=>{ el('resultModal').classList.remove('show'); doOpen(true); });
   document.getElementById('closeModal').addEventListener('click', ()=>el('resultModal').classList.remove('show'));
-  document.getElementById('buyGibits').addEventListener('click', ()=>{
-    const b = document.getElementById('gibits');
-    b.textContent = parseInt(b.textContent)+500;
-    alert('Purchase complete! (Demo)');
-  });
+  // --- Update the button events ---
+document.getElementById('buyGibits').addEventListener('click', () => {
+  const b = document.getElementById('gibits');
+  b.textContent = parseInt(b.textContent) + 500;
+  
+  coinDropSound.currentTime = 0;
+  coinDropSound.play();
+
+  alert('Purchase complete! 500 gibits added to your account.');
+});
+
+document.getElementById('buyManyGibits').addEventListener('click', () => {
+  const b = document.getElementById('gibits');
+  b.textContent = parseInt(b.textContent) + 5000;
+  
+  chaChingSound.currentTime = 0;
+  chaChingSound.play();
+
+  alert('Purchase complete! 5000 gibits added to your account.');
+});
   document.querySelector('.hub').addEventListener('click', ()=>doOpen(false));
 
   document.getElementById('addPreset').addEventListener('click', ()=>{
     items=[
       { name:'🍞 Bread', p:.35, color:'#ffd76b' },
-      { name:'🥚 Eggs (1pc)', p:.28, color:'#b5e3ff' },
-      { name:'🥛 Milk (half carton)', p:.2, color:'#c3ffe2' },
-      { name:'🧈 Butter (pat)', p:.1, color:'#ffe4b5' },
-      { name:'🥩 Steak (rare drop)', p:.04, color:'#ff8b8b' },
+      { name:'🥚 Eggs (dozen)', p:.28, color:'#b5e3ff' },
+      { name:'🥛 Milk (half gallon)', p:.2, color:'#c3ffe2' },
+      { name:'🧈 Butter', p:.1, color:'#ffe4b5' },
+      { name:'🥩 Steak (rare)', p:.04, color:'#ff8b8b' },
       { name:'🛍️ Coupon (worthless)', p:.03, color:'#e0d0ff'}
     ];
-    boxName='Grocery Basics Box'; boxCost=10;
+    boxName='Grocery Basics Box'; boxCost=325;
     el('boxName').value=boxName; el('boxCost').value=boxCost;
     renderRows(); refreshProbSum();
   });

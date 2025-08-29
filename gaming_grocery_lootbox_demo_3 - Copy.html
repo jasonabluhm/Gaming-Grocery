@@ -198,7 +198,7 @@
         <button class="btn-danger" id="clearItems">Clear</button>
       </div>
       <div class="storefront" style="margin-top:8px;">
-        Analogy: Imagine if a grocery store sold <b>Gibits</b> instead of groceries. You must buy Gibits, then exchange them for a <i>mystery box</i> that may or may not contain the ingredients you actually need.
+        Analogy: Imagine if a grocery store sold <b>gibits</b> instead of groceries. You must buy gibits, then exchange them for a <i>mystery box</i> that may or may not contain the ingredients you actually need.
       </div>
     </section>
 
@@ -210,7 +210,8 @@
         <div class="stat"><div>Expected value (items/open):</div><div id="ev" class="pill">—</div></div>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
           <button class="btn" id="openBtn">Open (Spend Gibits)</button>
-
+          <button class="btn-ghost" id="freeOpen">Open (Free Demo)</button>
+          <button class="btn-ghost" id="rerender">Rerender Wheel</button>
         </div>
       </div>
 
@@ -579,7 +580,7 @@ function playSlowdown() {
 
   function updateHeader() {
     activeName.textContent = boxName;
-    activeCost.textContent = `${boxCost} Gibits`;
+    activeCost.textContent = `${boxCost} gibits`;
     evEl.textContent = (items.length ? 1 : 0).toFixed(2);
   }
 
@@ -670,7 +671,7 @@ async function doOpen(spend) {
   if (spend) {
     const have = parseInt(document.getElementById('gibits').textContent);
     if (have < boxCost) { 
-      alert('Not enough Gibits.'); 
+      alert('Not enough gibits.'); 
       return; 
     }
     document.getElementById('gibits').textContent = have - boxCost;
@@ -743,6 +744,7 @@ async function doOpen(spend) {
     renderWheel(); renderLegend(); updateHeader();
   });
 
+  document.getElementById('rerender').addEventListener('click', ()=>{ renderWheel(); });
   document.getElementById('exportBox').addEventListener('click', ()=>{
     const data = { name: boxName, cost: boxCost, items };
     const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
@@ -763,6 +765,7 @@ async function doOpen(spend) {
   });
 
   document.getElementById('openBtn').addEventListener('click', ()=>doOpen(true));
+  document.getElementById('freeOpen').addEventListener('click', ()=>doOpen(false));
   document.getElementById('again').addEventListener('click', ()=>{ el('resultModal').classList.remove('show'); doOpen(true); });
   document.getElementById('closeModal').addEventListener('click', ()=>el('resultModal').classList.remove('show'));
   // --- Update the button events ---
@@ -775,7 +778,7 @@ document.getElementById('buyGibits').addEventListener('click', () => {
 
   // Wait a tiny bit before showing alert to let sound start
   setTimeout(() => {
-    alert('Purchase complete! 500 Gibits added to your account.');
+    alert('Purchase complete! 500 gibits added to your account.');
   }, 100); // 100ms is usually enough
 });
 
@@ -787,7 +790,7 @@ document.getElementById('buyManyGibits').addEventListener('click', () => {
   chaChingSound.play();
 
   setTimeout(() => {
-    alert('Purchase complete! 5000 Gibits added to your account.');
+    alert('Purchase complete! 5000 gibits added to your account.');
   }, 100);
 });
   document.querySelector('.hub').addEventListener('click', ()=>doOpen(false));

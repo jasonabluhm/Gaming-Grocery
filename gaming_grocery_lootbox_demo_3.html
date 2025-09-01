@@ -69,9 +69,24 @@
     /* Result modal */
     .modal { position: fixed; inset: 0; display: none; place-items: center; background: rgba(0,0,0,.5); }
     .modal.show { display: grid; }
-    .card { width: min(520px, 92vw); background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.12); border-radius: 18px; padding: 16px; text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,.35); }
-    .big { font-size: clamp(20px, 2.4vw, 32px); font-weight: 900; letter-spacing: .5px; }
-    .sub { color: var(--muted); font-size: 14px; }
+    .card { width: min(520px, 92vw); 
+            background: linear-gradient(180deg, rgba(0,0,0,0.85), rgba(0,0,0,0.95)); /* darker background */
+            border: 1px solid rgba(255,255,255,.12); 
+            border-radius: 18px; 
+            padding: 16px; 
+            text-align: center; 
+            box-shadow: 0 30px 60px rgba(0,0,0,.35); 
+          }
+    .big { 
+            font-size: clamp(20px, 2.4vw, 32px); 
+            font-weight: 900; 
+            letter-spacing: .5px; 
+            color: #fff; /* ensures high contrast against darker background */
+          }
+    .sub { 
+            color: #ddd; /* lighter than muted for readability */
+            font-size: 14px; 
+          }
 
     /* Confetti */
     .confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
@@ -185,7 +200,7 @@
   <div class="modal" id="resultModal" role="dialog" aria-modal="true">
     <div class="card">
       <div class="big" id="resultTitle">You got: —</div>
-      <div class="sub">Observe how celebration is independent of value — a classic dark pattern.</div>
+      <div class="sub">Observe how celebration is independent of value — a classic dopamine boost.</div>
       <div style="display:flex; gap:8px; justify-content:center; margin-top:12px;">
         <button class="btn" id="again">Open Again</button>
         <button class="btn-ghost" id="closeModal">Close</button>
